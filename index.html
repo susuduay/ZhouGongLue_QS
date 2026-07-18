@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>火影战力周攻略</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'naruto-bg': '#0f0a05',
+        'naruto-card': '#1c1208',
+        'naruto-border': '#4a3015',
+        'naruto-text': '#fef3c7',
+        'naruto-orange': '#f97316',
+        'naruto-orange-dark': '#ea580c',
+        'naruto-gold': '#fbbf24',
+        'naruto-muted': '#2a1a0a',
+        'naruto-muted-text': '#d4a373',
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+      },
+      boxShadow: {
+        'naruto-glow': '0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.1)',
+        'naruto-glow-strong': '0 0 30px rgba(249, 115, 22, 0.5), 0 0 60px rgba(249, 115, 22, 0.2)',
+      },
+    },
+  },
+}
+</script>
+<style>
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #2a1a0a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c2410c;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #f97316;
+  }
+
+  /* 火影风格渐变文字 */
+  .gradient-text {
+    background: linear-gradient(135deg, #f97316, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 忍者风格分隔线 */
+  .ninja-divider {
+    position: relative;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f97316, #fbbf24, #f97316, transparent);
+  }
+  .ninja-divider::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #f97316;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+  }
+
+  /* 木叶标志 SVG 样式 */
+  .leaf-icon {
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6));
+  }
+
+  /* 内容区富文本样式 */
+  .guide-content {
+    line-height: 1.8;
+  }
+  .guide-content h1,
+  .guide-content h2,
+  .guide-content h3,
+  .guide-content h4 {
+    color: #fbbf24;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-content h1 { font-size: 1.75rem; }
+  .guide-content h2 { font-size: 1.5rem; }
+  .guide-content h3 { font-size: 1.25rem; }
+  .guide-content h4 { font-size: 1.1rem; }
+  .guide-content p {
+    margin-bottom: 1rem;
+    color: #fef3c7;
+  }
+  .guide-content ul,
+  .guide-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    color: #fef3c7;
+  }
+  .guide-content li {
+    margin-bottom: 0.5rem;
+  }
+  .guide-content ul li::marker {
+    color: #f97316;
+  }
+  .guide-content ol li::marker {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content strong,
+  .guide-content b {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content em,
+  .guide-content i {
+    color: #f97316;
+    font-style: italic;
+  }
+  .guide-content a {
+    color: #f97316;
+    text-decoration: underline;
+  }
+  .guide-content a:hover {
+    color: #fbbf24;
+  }
+  .guide-content blockquote {
+    border-left: 4px solid #f97316;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    background: rgba(249, 115, 22, 0.1);
+    padding: 0.75rem 1rem;
+    color: #fef3c7;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .guide-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: #1c1208;
+  }
+  .guide-content th,
+  .guide-content td {
+    border: 1px solid #4a3015;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .guide-content th {
+    background: #4a3015;
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content tr:nth-child(even) {
+    background: rgba(74, 48, 21, 0.3);
+  }
+  .guide-content img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border: 1px solid #4a3015;
+  }
+  .guide-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #4a3015, transparent);
+    margin: 1.5rem 0;
+  }
+  .guide-content code {
+    background: #2a1a0a;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: #fbbf24;
+    font-family: monospace;
+  }
+  .guide-content pre {
+    background: #2a1a0a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    border: 1px solid #4a3015;
+    margin: 1rem 0;
+  }
+  .guide-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  /* 卡片发光边框 */
+  .card-glow {
+    position: relative;
+    border: 1px solid #4a3015;
+    background: #1c1208;
+  }
+  .card-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #f97316, #fbbf24, #f97316);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* 历史记录项悬停效果 */
+  .history-item {
+    transition: all 0.2s ease;
+  }
+  .history-item:hover {
+    transform: translateX(4px);
+    border-color: #f97316;
+  }
+  .history-item.active {
+    border-color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+  }
+</style>
+</head>
+<body class="bg-naruto-bg text-naruto-text min-h-screen font-sans">
+
+  <!-- 顶部导航栏 -->
+  <nav class="sticky top-0 z-50 bg-naruto-bg/95 backdrop-blur-sm border-b border-naruto-border">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- 左侧：木叶标志 + 标题 -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 flex items-center justify-center">
+          <svg viewBox="0 0 48 48" class="w-10 h-10 leaf-icon" xmlns="http://www.w3.org/2000/svg">
+            <!-- 木叶标志 -->
+            <path d="M24 6 C32 10 40 20 40 32 C40 40 32 44 24 44 C16 44 8 40 8 32 C8 20 16 10 24 6 Z" 
+                  fill="#1c1208" stroke="#f97316" stroke-width="2"/>
+            <path d="M24 14 C30 18 35 26 35 33" 
+                  fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M24 14 C18 18 13 26 13 33" 
+                  fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="24" cy="34" r="2" fill="#ef4444"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold gradient-text tracking-wide">火影战力周攻略</h1>
+          <p class="text-xs text-naruto-muted-text">NARUTO POWER WEEKLY GUIDE</p>
+        </div>
+      </div>
+      <!-- 右侧：什么都不放 -->
+      <div></div>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- Hero 区域 -->
+    <section class="text-center mb-12">
+      <div class="inline-block mb-4">
+        <span class="px-4 py-1.5 bg-naruto-muted border border-naruto-border rounded-full text-xs text-naruto-gold font-medium tracking-widest">
+          火之意志 代代相传
+        </span>
+      </div>
+      <h2 id="heroTitle" class="text-4xl md:text-5xl font-black mb-4 gradient-text tracking-tight">
+        第 -- 期 战力周攻略
+      </h2>
+      <p id="heroDate" class="text-naruto-muted-text mb-6 text-sm">
+        更新时间：--
+      </p>
+      
+      <!-- 忍者风格分隔线 -->
+      <div class="max-w-md mx-auto">
+        <div class="ninja-divider"></div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+      <!-- 左侧主内容区 -->
+      <div class="lg:col-span-3">
+
+        <!-- 内容展示区 -->
+        <section class="card-glow rounded-xl p-6 md:p-8 shadow-naruto-glow">
+          <!-- 内容标题栏 -->
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-naruto-border">
+            <div class="flex items-center gap-3">
+              <div class="w-1 h-6 bg-gradient-to-b from-naruto-orange to-naruto-gold rounded-full"></div>
+              <h3 id="contentTitle" class="text-xl font-bold text-naruto-gold">攻略详情</h3>
+            </div>
+          </div>
+
+          <!-- 空状态 -->
+          <div id="emptyState" class="py-16 text-center">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-naruto-muted flex items-center justify-center border border-naruto-border">
+              <svg class="w-10 h-10 text-naruto-orange/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h4 class="text-lg font-bold text-naruto-text mb-2">暂无攻略内容</h4>
+            <p class="text-naruto-muted-text text-sm">
+              请等待更新
+            </p>
+          </div>
+
+          <!-- 内容显示区 -->
+          <div id="guideContent" class="guide-content hidden">
+            <!-- 内容由 JS 动态填充 -->
+          </div>
+        </section>
+      </div>
+
+      <!-- 右侧：历史期数侧边栏 -->
+      <aside class="lg:col-span-1">
+        <div class="card-glow rounded-xl p-5 sticky top-20">
+          <div class="flex items-center gap-2 mb-4 pb-3 border-b border-naruto-border">
+            <svg class="w-5 h-5 text-naruto-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <h3 class="font-bold text-naruto-gold">历史期数</h3>
+          </div>
+
+          <div id="historyList" class="space-y-2">
+            <!-- 历史记录由 JS 动态填充 -->
+          </div>
+
+          <div id="historyEmpty" class="py-8 text-center">
+            <svg class="w-8 h-8 mx-auto mb-2 text-naruto-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+            </svg>
+            <p class="text-xs text-naruto-muted-text">暂无历史记录</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- 底部 -->
+  <footer class="border-t border-naruto-border mt-16 py-8 bg-naruto-card/30">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <!-- 木叶标识 -->
+      <div class="flex justify-center mb-4">
+        <svg viewBox="0 0 48 48" class="w-12 h-12 opacity-40" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 6 C32 10 40 20 40 32 C40 40 32 44 24 44 C16 44 8 40 8 32 C8 20 16 10 24 6 Z" 
+                fill="none" stroke="#f97316" stroke-width="1.5"/>
+          <path d="M24 14 C30 18 35 26 35 33" 
+                fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M24 14 C18 18 13 26 13 33" 
+                fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <p class="text-naruto-muted-text text-sm mb-2">
+        火影战力周攻略 · <span class="text-naruto-orange">火之意志传承</span>
+      </p>
+      <p class="text-naruto-muted-text/60 text-xs">
+        木叶村火影攻略组出品
+      </p>
+    </div>
+  </footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== 数据存储 ==========
+  const STORAGE_KEY = 'naruto_guides';
+  const CURRENT_KEY = 'naruto_guides_current';
+
+  // 缓存的攻略数据
+  let guidesCache = null;
+  let dataSource = 'local'; // 'json' 或 'local'
+
+  // 从 localStorage 加载（fallback）
+  function loadGuidesFromLocal() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error('加载本地攻略数据失败:', e);
+      return [];
+    }
+  }
+
+  // 优先从 data.json 加载，失败则 fallback 到 localStorage
+  async function loadGuides() {
+    if (guidesCache !== null) {
+      return guidesCache;
+    }
+
+    try {
+      const response = await fetch('data.json', { cache: 'no-store' });
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          guidesCache = data;
+          dataSource = 'json';
+          return guidesCache;
+        }
+      }
+    } catch (e) {
+      console.log('无法加载 data.json，使用本地数据:', e);
+    }
+
+    // fallback 到 localStorage
+    guidesCache = loadGuidesFromLocal();
+    dataSource = 'local';
+    return guidesCache;
+  }
+
+  // 强制刷新缓存（重新加载）
+  async function reloadGuides() {
+    guidesCache = null;
+    return loadGuides();
+  }
+
+  function getCurrentGuideId() {
+    return localStorage.getItem(CURRENT_KEY) || null;
+  }
+
+  function setCurrentGuideId(id) {
+    localStorage.setItem(CURRENT_KEY, id);
+  }
+
+  // ========== DOM 元素 ==========
+  const els = {
+    heroTitle: document.getElementById('heroTitle'),
+    heroDate: document.getElementById('heroDate'),
+    contentTitle: document.getElementById('contentTitle'),
+    emptyState: document.getElementById('emptyState'),
+    guideContent: document.getElementById('guideContent'),
+    historyList: document.getElementById('historyList'),
+    historyEmpty: document.getElementById('historyEmpty'),
+  };
+
+  // ========== 格式化日期 ==========
+  function formatDate(dateStr) {
+    if (!dateStr) return '--';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}年${month}月${day}日`;
+  }
+
+  // ========== 渲染攻略内容 ==========
+  function renderGuide(guide) {
+    if (!guide) {
+      els.emptyState.classList.remove('hidden');
+      els.guideContent.classList.add('hidden');
+      els.heroTitle.textContent = '第 -- 期 战力周攻略';
+      els.heroDate.textContent = '更新时间：--';
+      els.contentTitle.textContent = '攻略详情';
+      return;
+    }
+
+    els.emptyState.classList.add('hidden');
+    els.guideContent.classList.remove('hidden');
+    
+    // 渲染内容
+    els.guideContent.innerHTML = guide.content;
+    
+    // 更新 Hero
+    els.heroTitle.textContent = guide.title || '战力周攻略';
+    els.heroDate.textContent = `更新时间：${formatDate(guide.date)}`;
+    els.contentTitle.textContent = guide.title || '攻略详情';
+  }
+
+  // ========== 渲染历史记录 ==========
+  async function renderHistory() {
+    const guides = await loadGuides();
+    const currentId = getCurrentGuideId();
+
+    if (guides.length === 0) {
+      els.historyList.innerHTML = '';
+      els.historyEmpty.classList.remove('hidden');
+      return;
+    }
+
+    els.historyEmpty.classList.add('hidden');
+
+    // 倒序显示（最新在上面）
+    const reversedGuides = [...guides].reverse();
+
+    els.historyList.innerHTML = reversedGuides.map(guide => {
+      const isActive = guide.id === currentId;
+      return `
+        <div class="history-item cursor-pointer p-3 border border-naruto-border rounded-lg ${isActive ? 'active' : ''}" data-id="${guide.id}">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-sm ${isActive ? 'text-naruto-gold' : 'text-naruto-text'}">${guide.title || '未命名攻略'}</span>
+            ${isActive ? '<span class="w-2 h-2 rounded-full bg-naruto-gold"></span>' : ''}
+          </div>
+          <p class="text-xs text-naruto-muted-text">${formatDate(guide.date)}</p>
+        </div>
+      `;
+    }).join('');
+
+    // 绑定点击事件
+    els.historyList.querySelectorAll('.history-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = item.dataset.id;
+        viewGuide(id);
+      });
+    });
+  }
+
+  // ========== 查看攻略 ==========
+  async function viewGuide(id) {
+    const guides = await loadGuides();
+    const guide = guides.find(g => g.id === id);
+    if (guide) {
+      setCurrentGuideId(id);
+      renderGuide(guide);
+      await renderHistory();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // ========== 初始化 ==========
+  async function init() {
+    const guides = await loadGuides();
+    const currentId = getCurrentGuideId();
+    
+    if (guides.length > 0) {
+      // 找到当前选中的，或者显示最新一期（数组最后一个）
+      let currentGuide = null;
+      if (currentId) {
+        currentGuide = guides.find(g => g.id === currentId);
+      }
+      if (!currentGuide) {
+        // 最新一期在数组最后
+        currentGuide = guides[guides.length - 1];
+        setCurrentGuideId(currentGuide.id);
+      }
+      renderGuide(currentGuide);
+    } else {
+      renderGuide(null);
+    }
+    
+    await renderHistory();
+  }
+
+  // 启动
+  init();
+})();
+</script>
+</body>
+</html>

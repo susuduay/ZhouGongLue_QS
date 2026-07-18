@@ -1,0 +1,6 @@
+﻿{
+    "date":  "2024-01-01",
+    "title":  "示例：第1期 战力周攻略",
+    "content":  "\u003ch2\u003e欢迎来到火影战力周攻略\u003c/h2\u003e\u003cp\u003e这是示例内容，请在管理后台上传你的 Word 文档。\u003c/p\u003e\u003cp\u003e使用方法：\u003c/p\u003e\u003col\u003e\u003cli\u003e打开 admin.html 管理后台\u003c/li\u003e\u003cli\u003e上传 .docx Word 文档\u003c/li\u003e\u003cli\u003e点击发布，下载生成的 data.json\u003c/li\u003e\u003cli\u003e将 data.json 上传到 GitHub 仓库根目录\u003c/li\u003e\u003c/ol\u003e",
+    "id":  "sample-1"
+}
