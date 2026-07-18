@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>攻略管理后台 - 火影战力周攻略</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'naruto-bg': '#0f0a05',
+        'naruto-card': '#1c1208',
+        'naruto-border': '#4a3015',
+        'naruto-text': '#fef3c7',
+        'naruto-orange': '#f97316',
+        'naruto-orange-dark': '#ea580c',
+        'naruto-gold': '#fbbf24',
+        'naruto-red': '#ef4444',
+        'naruto-muted': '#2a1a0a',
+        'naruto-muted-text': '#d4a373',
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif'],
+      },
+      boxShadow: {
+        'naruto-glow': '0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.1)',
+        'naruto-glow-strong': '0 0 30px rgba(249, 115, 22, 0.5), 0 0 60px rgba(249, 115, 22, 0.2)',
+      },
+    },
+  },
+}
+</script>
+<style>
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #2a1a0a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c2410c;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #f97316;
+  }
+
+  /* 火影风格渐变文字 */
+  .gradient-text {
+    background: linear-gradient(135deg, #f97316, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 忍者风格分隔线 */
+  .ninja-divider {
+    position: relative;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #f97316, #fbbf24, #f97316, transparent);
+  }
+  .ninja-divider::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #f97316;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.8);
+  }
+
+  /* 木叶标志 SVG 样式 */
+  .leaf-icon {
+    filter: drop-shadow(0 0 4px rgba(249, 115, 22, 0.6));
+  }
+
+  /* 内容区富文本样式 */
+  .guide-content {
+    line-height: 1.8;
+  }
+  .guide-content h1,
+  .guide-content h2,
+  .guide-content h3,
+  .guide-content h4 {
+    color: #fbbf24;
+    font-weight: bold;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-content h1 { font-size: 1.75rem; }
+  .guide-content h2 { font-size: 1.5rem; }
+  .guide-content h3 { font-size: 1.25rem; }
+  .guide-content h4 { font-size: 1.1rem; }
+  .guide-content p {
+    margin-bottom: 1rem;
+    color: #fef3c7;
+  }
+  .guide-content ul,
+  .guide-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    color: #fef3c7;
+  }
+  .guide-content li {
+    margin-bottom: 0.5rem;
+  }
+  .guide-content ul li::marker {
+    color: #f97316;
+  }
+  .guide-content ol li::marker {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content strong,
+  .guide-content b {
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content em,
+  .guide-content i {
+    color: #f97316;
+    font-style: italic;
+  }
+  .guide-content a {
+    color: #f97316;
+    text-decoration: underline;
+  }
+  .guide-content a:hover {
+    color: #fbbf24;
+  }
+  .guide-content blockquote {
+    border-left: 4px solid #f97316;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    background: rgba(249, 115, 22, 0.1);
+    padding: 0.75rem 1rem;
+    color: #fef3c7;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .guide-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: #1c1208;
+  }
+  .guide-content th,
+  .guide-content td {
+    border: 1px solid #4a3015;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .guide-content th {
+    background: #4a3015;
+    color: #fbbf24;
+    font-weight: bold;
+  }
+  .guide-content tr:nth-child(even) {
+    background: rgba(74, 48, 21, 0.3);
+  }
+  .guide-content img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    border: 1px solid #4a3015;
+  }
+  .guide-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #4a3015, transparent);
+    margin: 1.5rem 0;
+  }
+  .guide-content code {
+    background: #2a1a0a;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    color: #fbbf24;
+    font-family: monospace;
+  }
+  .guide-content pre {
+    background: #2a1a0a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    border: 1px solid #4a3015;
+    margin: 1rem 0;
+  }
+  .guide-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  /* 卡片发光边框 */
+  .card-glow {
+    position: relative;
+    border: 1px solid #4a3015;
+    background: #1c1208;
+  }
+  .card-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #f97316, #fbbf24, #f97316);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* 拖拽上传区 */
+  .drop-zone {
+    transition: all 0.3s ease;
+  }
+  .drop-zone.dragover {
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.1);
+    box-shadow: 0 0 30px rgba(249, 115, 22, 0.3);
+  }
+
+  /* 历史记录项悬停效果 */
+  .history-item {
+    transition: all 0.2s ease;
+  }
+  .history-item:hover {
+    border-color: #f97316;
+  }
+
+  /* 按钮发光效果 */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
+    transform: translateY(-1px);
+  }
+  .btn-glow:active {
+    transform: translateY(0);
+  }
+
+  /* 输入框聚焦效果 */
+  .naruto-input {
+    background: #0f0a05;
+    border: 1px solid #4a3015;
+    color: #fef3c7;
+    transition: all 0.3s ease;
+  }
+  .naruto-input:focus {
+    outline: none;
+    border-color: #f97316;
+    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
+  }
+  .naruto-input::placeholder {
+    color: #d4a373;
+    opacity: 0.6;
+  }
+
+  /* Toast 动画 */
+  @keyframes slideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+  .toast-show {
+    animation: slideDown 0.3s ease forwards;
+  }
+</style>
+</head>
+<body class="bg-naruto-bg text-naruto-text min-h-screen font-sans">
+
+  <!-- 顶部导航栏 -->
+  <nav class="sticky top-0 z-50 bg-naruto-bg/95 backdrop-blur-sm border-b border-naruto-border">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <!-- 左侧：木叶标志 + 标题 -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 flex items-center justify-center">
+          <svg viewBox="0 0 48 48" class="w-10 h-10 leaf-icon" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 6 C32 10 40 20 40 32 C40 40 32 44 24 44 C16 44 8 40 8 32 C8 20 16 10 24 6 Z" 
+                  fill="#1c1208" stroke="#ef4444" stroke-width="2"/>
+            <path d="M24 14 C30 18 35 26 35 33" 
+                  fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M24 14 C18 18 13 26 13 33" 
+                  fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="24" cy="34" r="2" fill="#ef4444"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold gradient-text tracking-wide">攻略管理后台</h1>
+          <p class="text-xs text-naruto-muted-text">ADMIN CONSOLE</p>
+        </div>
+      </div>
+      <!-- 右侧：返回主页 -->
+      <a href="index.html" class="px-4 py-2 border border-naruto-border rounded-md text-sm text-naruto-text hover:border-naruto-orange hover:text-naruto-orange transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        返回主页
+      </a>
+    </div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- 当前状态区 -->
+    <section class="card-glow rounded-xl p-6 shadow-naruto-glow mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-1 h-6 bg-gradient-to-b from-naruto-gold to-naruto-orange rounded-full"></div>
+        <h2 class="text-xl font-bold text-naruto-gold">当前状态</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-naruto-muted/50 border border-naruto-border rounded-lg p-4">
+          <p class="text-xs text-naruto-muted-text mb-1">最新一期</p>
+          <p id="latestIssue" class="text-2xl font-bold gradient-text">--</p>
+        </div>
+        <div class="bg-naruto-muted/50 border border-naruto-border rounded-lg p-4">
+          <p class="text-xs text-naruto-muted-text mb-1">总期数</p>
+          <p id="totalIssues" class="text-2xl font-bold text-naruto-text">0</p>
+        </div>
+        <div class="bg-naruto-muted/50 border border-naruto-border rounded-lg p-4">
+          <p class="text-xs text-naruto-muted-text mb-1">最后更新</p>
+          <p id="lastUpdate" class="text-lg font-bold text-naruto-text">--</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 上传发布区 -->
+    <section class="card-glow rounded-xl p-6 md:p-8 shadow-naruto-glow mb-6">
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-naruto-border">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-6 bg-gradient-to-b from-naruto-orange to-naruto-red rounded-full"></div>
+          <h2 class="text-xl font-bold text-naruto-orange">发布新攻略</h2>
+        </div>
+        <span class="px-2 py-1 text-xs bg-naruto-red/20 border border-naruto-red/40 rounded text-naruto-red font-medium">
+          管理模式
+        </span>
+      </div>
+
+      <!-- 期数输入 -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-naruto-gold mb-2">
+          期数标题 <span class="text-naruto-red">*</span>
+        </label>
+        <input type="text" id="titleInput" class="naruto-input w-full px-4 py-2.5 rounded-md font-medium" placeholder="例如：第10期 战力周攻略">
+        <p class="text-xs text-naruto-muted-text mt-1">输入完整的期数标题，如"第10期 战力周攻略"</p>
+      </div>
+
+      <!-- 日期输入 -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-naruto-gold mb-2">
+          更新日期
+        </label>
+        <input type="date" id="dateInput" class="naruto-input w-full px-4 py-2.5 rounded-md">
+      </div>
+
+      <!-- 拖拽上传区 -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-naruto-gold mb-2">
+          上传 Word 文档 <span class="text-naruto-red">*</span>
+        </label>
+        <div id="dropZone" class="drop-zone border-2 border-dashed border-naruto-border rounded-xl p-8 text-center cursor-pointer hover:border-naruto-orange/60 bg-naruto-bg/50">
+          <input type="file" id="fileInput" accept=".docx" class="hidden">
+          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-naruto-muted flex items-center justify-center border border-naruto-border">
+            <svg class="w-8 h-8 text-naruto-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <p class="text-naruto-text font-medium mb-1">拖拽 .docx 文件到此处</p>
+          <p class="text-naruto-muted-text text-sm mb-3">或点击选择文件</p>
+          <p class="text-xs text-naruto-muted-text/70">支持 Microsoft Word 文档 (.docx)</p>
+        </div>
+        <p id="fileName" class="mt-3 text-sm text-naruto-gold hidden">
+          <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span id="fileNameText"></span>
+        </p>
+      </div>
+
+      <!-- 预览区 -->
+      <div id="previewSection" class="mb-6 hidden">
+        <div class="flex items-center justify-between mb-3">
+          <label class="text-sm font-medium text-naruto-gold flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            内容预览
+          </label>
+          <span class="text-xs text-naruto-gold">转换完成</span>
+        </div>
+        <div class="border border-naruto-border rounded-lg p-4 max-h-96 overflow-y-auto bg-naruto-bg/50">
+          <div id="previewContent" class="guide-content text-sm">
+            <!-- 预览内容 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 按钮组 -->
+      <div class="flex items-center justify-between pt-4 border-t border-naruto-border">
+        <button id="exportBtn" class="px-5 py-2 border border-naruto-border text-naruto-orange rounded-md font-medium hover:bg-naruto-orange/10 hover:border-naruto-orange/50 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          导出 data.json
+        </button>
+        <div class="flex items-center gap-3">
+          <button id="resetBtn" class="px-5 py-2 bg-naruto-muted border border-naruto-border text-naruto-text rounded-md font-medium hover:bg-naruto-border/50 transition-colors">
+            重置
+          </button>
+          <button id="publishBtn" class="btn-glow px-6 py-2 bg-gradient-to-r from-naruto-orange to-naruto-orange-dark text-white font-bold rounded-md flex items-center gap-2 border border-naruto-orange/50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            发布更新
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 导入 data.json 区 -->
+    <section class="card-glow rounded-xl p-6 shadow-naruto-glow mb-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-1 h-6 bg-gradient-to-b from-naruto-gold to-naruto-orange rounded-full"></div>
+        <h2 class="text-lg font-bold text-naruto-gold">从 data.json 导入</h2>
+      </div>
+      <div class="flex items-center gap-3 flex-wrap">
+        <p class="text-sm text-naruto-muted-text flex-1 min-w-[200px]">
+          选择 data.json 文件，将攻略数据导入到本地，方便在不同电脑间同步。
+        </p>
+        <input type="file" id="importFileInput" accept=".json" class="hidden">
+        <button id="importBtn" class="px-5 py-2 border border-naruto-border text-naruto-orange rounded-md font-medium hover:bg-naruto-orange/10 hover:border-naruto-orange/50 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+          </svg>
+          选择文件导入
+        </button>
+      </div>
+    </section>
+
+    <!-- 历史记录管理区 -->
+    <section class="card-glow rounded-xl p-6 md:p-8 shadow-naruto-glow">
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-naruto-border">
+        <div class="flex items-center gap-3">
+          <div class="w-1 h-6 bg-gradient-to-b from-naruto-gold to-naruto-orange rounded-full"></div>
+          <h2 class="text-xl font-bold text-naruto-gold">历史记录管理</h2>
+        </div>
+        <button id="clearAllBtn" class="px-4 py-1.5 border border-naruto-red/50 text-naruto-red rounded-md text-sm hover:bg-naruto-red/10 transition-colors flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          清空全部
+        </button>
+      </div>
+
+      <div id="historyList" class="space-y-3">
+        <!-- 历史记录由 JS 动态填充 -->
+      </div>
+
+      <div id="historyEmpty" class="py-12 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-naruto-muted flex items-center justify-center border border-naruto-border">
+          <svg class="w-8 h-8 text-naruto-border" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+        </div>
+        <p class="text-naruto-muted-text">暂无历史记录</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部 -->
+  <footer class="border-t border-naruto-border mt-16 py-6 bg-naruto-card/30">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-naruto-muted-text text-sm">
+        管理后台 · <span class="text-naruto-orange">火影战力周攻略</span>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Toast 提示 -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 hidden">
+    <div id="toastContainer" class="px-5 py-3 rounded-lg shadow-naruto-glow-strong flex items-center gap-2 border">
+      <svg id="toastIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="toastMessage" class="text-sm font-medium">操作成功</span>
+    </div>
+  </div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== 数据存储 ==========
+  const STORAGE_KEY = 'naruto_guides';
+  const CURRENT_KEY = 'naruto_guides_current';
+
+  function loadGuides() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      console.error('加载攻略数据失败:', e);
+      return [];
+    }
+  }
+
+  function saveGuides(guides) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(guides));
+      return true;
+    } catch (e) {
+      console.error('保存攻略数据失败:', e);
+      showToast('保存失败，存储空间可能不足', 'error');
+      return false;
+    }
+  }
+
+  // ========== 导出 data.json ==========
+  function exportDataJson() {
+    const guides = loadGuides();
+    const jsonStr = JSON.stringify(guides, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ========== 导入 data.json ==========
+  function importDataJson(file) {
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+      showToast('请上传 .json 格式的文件', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+
+        // 简单验证数据格式
+        if (!Array.isArray(data)) {
+          showToast('文件格式错误：数据应为数组', 'error');
+          return;
+        }
+
+        // 验证每一项的基本字段
+        const valid = data.every(item =>
+          item && typeof item === 'object' &&
+          'id' in item && 'title' in item &&
+          'date' in item && 'content' in item
+        );
+
+        if (!valid) {
+          showToast('文件格式错误：数据项缺少必要字段', 'error');
+          return;
+        }
+
+        // 确认导入
+        const currentCount = loadGuides().length;
+        if (!confirm(`确定导入 ${data.length} 期攻略吗？\n当前本地有 ${currentCount} 期，导入后将被替换。`)) {
+          return;
+        }
+
+        saveGuides(data);
+
+        // 更新当前选中
+        if (data.length > 0) {
+          localStorage.setItem(CURRENT_KEY, data[data.length - 1].id);
+        } else {
+          localStorage.removeItem(CURRENT_KEY);
+        }
+
+        updateStatus();
+        renderHistory();
+        showToast(`成功导入 ${data.length} 期攻略`, 'success');
+      } catch (err) {
+        console.error('导入失败:', err);
+        showToast('文件解析失败，请确认是有效的 JSON 文件', 'error');
+      }
+    };
+    reader.onerror = function() {
+      showToast('文件读取失败', 'error');
+    };
+    reader.readAsText(file);
+  }
+
+  // ========== DOM 元素 ==========
+  const els = {
+    latestIssue: document.getElementById('latestIssue'),
+    totalIssues: document.getElementById('totalIssues'),
+    lastUpdate: document.getElementById('lastUpdate'),
+    titleInput: document.getElementById('titleInput'),
+    dateInput: document.getElementById('dateInput'),
+    dropZone: document.getElementById('dropZone'),
+    fileInput: document.getElementById('fileInput'),
+    fileName: document.getElementById('fileName'),
+    fileNameText: document.getElementById('fileNameText'),
+    previewSection: document.getElementById('previewSection'),
+    previewContent: document.getElementById('previewContent'),
+    publishBtn: document.getElementById('publishBtn'),
+    resetBtn: document.getElementById('resetBtn'),
+    exportBtn: document.getElementById('exportBtn'),
+    importBtn: document.getElementById('importBtn'),
+    importFileInput: document.getElementById('importFileInput'),
+    clearAllBtn: document.getElementById('clearAllBtn'),
+    historyList: document.getElementById('historyList'),
+    historyEmpty: document.getElementById('historyEmpty'),
+    toast: document.getElementById('toast'),
+    toastContainer: document.getElementById('toastContainer'),
+    toastMessage: document.getElementById('toastMessage'),
+    toastIcon: document.getElementById('toastIcon'),
+  };
+
+  // ========== 当前状态 ==========
+  let currentHtml = '';
+  let currentFile = null;
+
+  // ========== Toast 提示 ==========
+  let toastTimer = null;
+  function showToast(message, type = 'success', duration = 2500) {
+    const container = els.toastContainer;
+    const msg = els.toastMessage;
+    const icon = els.toastIcon;
+    
+    msg.textContent = message;
+    
+    if (type === 'success') {
+      container.className = 'px-5 py-3 rounded-lg shadow-naruto-glow-strong flex items-center gap-2 border bg-naruto-card border-naruto-gold text-naruto-gold';
+      icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>';
+    } else if (type === 'error') {
+      container.className = 'px-5 py-3 rounded-lg flex items-center gap-2 border bg-naruto-card border-naruto-red text-naruto-red';
+      icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+    } else {
+      container.className = 'px-5 py-3 rounded-lg shadow-naruto-glow-strong flex items-center gap-2 border bg-naruto-card border-naruto-orange text-naruto-orange';
+      icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+    }
+    
+    els.toast.classList.remove('hidden');
+    els.toast.classList.add('toast-show');
+    
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      els.toast.classList.add('hidden');
+      els.toast.classList.remove('toast-show');
+    }, duration);
+  }
+
+  // ========== 格式化日期 ==========
+  function formatDate(dateStr) {
+    if (!dateStr) return '--';
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}年${month}月${day}日`;
+  }
+
+  // ========== 生成 ID ==========
+  function generateId() {
+    return 'issue-' + Date.now();
+  }
+
+  // ========== 获取今天日期字符串 ==========
+  function getTodayStr() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // ========== 更新状态区 ==========
+  function updateStatus() {
+    const guides = loadGuides();
+    
+    els.totalIssues.textContent = guides.length;
+    
+    if (guides.length > 0) {
+      const latest = guides[guides.length - 1];
+      els.latestIssue.textContent = latest.title || '未命名';
+      els.lastUpdate.textContent = formatDate(latest.date);
+    } else {
+      els.latestIssue.textContent = '--';
+      els.lastUpdate.textContent = '--';
+    }
+  }
+
+  // ========== 渲染历史记录 ==========
+  function renderHistory() {
+    const guides = loadGuides();
+
+    if (guides.length === 0) {
+      els.historyList.innerHTML = '';
+      els.historyEmpty.classList.remove('hidden');
+      return;
+    }
+
+    els.historyEmpty.classList.add('hidden');
+
+    // 倒序显示（最新在上面）
+    const reversedGuides = [...guides].reverse();
+
+    els.historyList.innerHTML = reversedGuides.map((guide, index) => {
+      const realIndex = guides.length - 1 - index;
+      return `
+        <div class="history-item border border-naruto-border rounded-lg p-4 bg-naruto-muted/30">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="w-6 h-6 rounded-full bg-naruto-orange/20 border border-naruto-orange/40 flex items-center justify-center text-xs text-naruto-orange font-bold">
+                  ${realIndex + 1}
+                </span>
+                <h4 class="font-bold text-naruto-text truncate">${guide.title || '未命名攻略'}</h4>
+              </div>
+              <p class="text-xs text-naruto-muted-text ml-8">${formatDate(guide.date)} · ID: ${guide.id}</p>
+            </div>
+            <button class="delete-btn flex-shrink-0 px-3 py-1.5 border border-naruto-red/40 text-naruto-red rounded-md text-xs hover:bg-naruto-red/10 transition-colors flex items-center gap-1" data-id="${guide.id}">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+              删除
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // 绑定删除按钮事件
+    els.historyList.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        deleteGuide(id);
+      });
+    });
+  }
+
+  // ========== 文件上传与转换 ==========
+  function handleFile(file) {
+    if (!file) return;
+    
+    if (!file.name.endsWith('.docx')) {
+      showToast('请上传 .docx 格式的 Word 文档', 'error');
+      return;
+    }
+
+    currentFile = file;
+    els.fileNameText.textContent = file.name;
+    els.fileName.classList.remove('hidden');
+    els.previewSection.classList.remove('hidden');
+    els.previewContent.innerHTML = '<p class="text-naruto-muted-text">正在转换文档，请稍候...</p>';
+    els.publishBtn.disabled = true;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const arrayBuffer = e.target.result;
+      
+      mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+        .then(function(result) {
+          currentHtml = result.value;
+          els.previewContent.innerHTML = currentHtml;
+          els.publishBtn.disabled = false;
+          
+          if (result.messages.length > 0) {
+            console.log('转换警告:', result.messages);
+          }
+          
+          showToast('文档转换成功', 'success');
+        })
+        .catch(function(err) {
+          console.error('转换失败:', err);
+          els.previewContent.innerHTML = '<p class="text-naruto-red">文档转换失败，请重试</p>';
+          showToast('文档转换失败', 'error');
+          els.publishBtn.disabled = true;
+        });
+    };
+    reader.onerror = function() {
+      showToast('文件读取失败', 'error');
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // ========== 发布攻略 ==========
+  function publishGuide() {
+    const title = els.titleInput.value.trim();
+    const date = els.dateInput.value || getTodayStr();
+
+    if (!title) {
+      showToast('请输入期数标题', 'error');
+      return;
+    }
+
+    if (!currentHtml) {
+      showToast('请先上传 Word 文档', 'error');
+      return;
+    }
+
+    const guides = loadGuides();
+
+    const newGuide = {
+      id: generateId(),
+      title: title,
+      date: date,
+      content: currentHtml,
+    };
+
+    // 检查是否有同名的，有则询问覆盖
+    const existingIndex = guides.findIndex(g => g.title === title);
+    if (existingIndex >= 0) {
+      if (!confirm(`「${title}」已存在，是否覆盖？`)) {
+        return;
+      }
+      // 覆盖：保留原ID
+      newGuide.id = guides[existingIndex].id;
+      guides[existingIndex] = newGuide;
+    } else {
+      guides.push(newGuide);
+    }
+
+    if (!saveGuides(guides)) return;
+
+    // 设置当前查看的为最新发布的
+    localStorage.setItem(CURRENT_KEY, newGuide.id);
+
+    // 重置表单
+    resetForm();
+    
+    // 刷新显示
+    updateStatus();
+    renderHistory();
+
+    // 发布成功后自动下载 data.json
+    exportDataJson();
+    showToast(`「${title}」发布成功！请将下载的 data.json 上传到 GitHub 仓库根目录`, 'success', 4000);
+  }
+
+  // ========== 删除单期 ==========
+  function deleteGuide(id) {
+    const guides = loadGuides();
+    const guide = guides.find(g => g.id === id);
+    if (!guide) return;
+
+    if (!confirm(`确定要删除「${guide.title || '未命名攻略'}」吗？此操作不可恢复。`)) {
+      return;
+    }
+
+    const newGuides = guides.filter(g => g.id !== id);
+    saveGuides(newGuides);
+
+    // 如果删除的是当前选中的，清除当前选中
+    const currentId = localStorage.getItem(CURRENT_KEY);
+    if (currentId === id) {
+      localStorage.removeItem(CURRENT_KEY);
+    }
+
+    updateStatus();
+    renderHistory();
+    showToast('删除成功', 'success');
+  }
+
+  // ========== 清空全部 ==========
+  function clearAll() {
+    if (!confirm('确定要清空所有攻略记录吗？此操作不可恢复！')) {
+      return;
+    }
+    if (!confirm('再次确认：真的要删除全部数据吗？')) {
+      return;
+    }
+
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CURRENT_KEY);
+
+    updateStatus();
+    renderHistory();
+    showToast('已清空全部记录', 'info');
+  }
+
+  // ========== 重置表单 ==========
+  function resetForm() {
+    currentHtml = '';
+    currentFile = null;
+    els.titleInput.value = '';
+    els.dateInput.value = getTodayStr();
+    els.fileInput.value = '';
+    els.fileName.classList.add('hidden');
+    els.previewSection.classList.add('hidden');
+    els.previewContent.innerHTML = '';
+    els.publishBtn.disabled = true;
+  }
+
+  // ========== 事件绑定 ==========
+  function bindEvents() {
+    // 发布按钮
+    els.publishBtn.addEventListener('click', publishGuide);
+
+    // 重置按钮
+    els.resetBtn.addEventListener('click', resetForm);
+
+    // 导出按钮
+    els.exportBtn.addEventListener('click', exportDataJson);
+
+    // 导入按钮
+    els.importBtn.addEventListener('click', () => {
+      els.importFileInput.click();
+    });
+
+    els.importFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      importDataJson(file);
+      // 重置 input 以便可以再次选择同一个文件
+      els.importFileInput.value = '';
+    });
+
+    // 清空全部
+    els.clearAllBtn.addEventListener('click', clearAll);
+
+    // 拖拽上传
+    els.dropZone.addEventListener('click', () => {
+      els.fileInput.click();
+    });
+
+    els.fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      handleFile(file);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      els.dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropZone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      els.dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropZone.classList.remove('dragover');
+      });
+    });
+
+    els.dropZone.addEventListener('drop', (e) => {
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    });
+  }
+
+  // ========== 初始化 ==========
+  function init() {
+    bindEvents();
+    
+    // 设置默认日期为今天
+    els.dateInput.value = getTodayStr();
+    
+    updateStatus();
+    renderHistory();
+  }
+
+  // 启动
+  init();
+})();
+</script>
+</body>
+</html>
