@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>火影战力周攻略</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #0f0f0f;
+  color: #e5e5e5;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+a { color: #f97316; text-decoration: none; }
+
+/* 头部 */
+.header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a1a0a 100%);
+  border-bottom: 2px solid #f97316;
+  padding: 16px 0;
+}
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #f97316;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fbbf24;
+  font-weight: bold;
+}
+.logo-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fbbf24;
+}
+.header-tag {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* 主内容 */
+.main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+.layout {
+  display: flex;
+  gap: 20px;
+}
+.content-area {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; }
+}
+
+/* 卡片 */
+.card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fbbf24;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 数据源状态 */
+.data-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: normal;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.status-green { background: #22c55e; }
+.status-orange { background: #f97316; }
+.status-red { background: #ef4444; }
+.status-gray { background: #6b7280; }
+.refresh-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.refresh-btn:hover { color: #f97316; background: #2a2a2a; }
+
+/* 攻略内容 */
+.guide-content {
+  color: #d4d4d4;
+}
+.guide-content h1, .guide-content h2, .guide-content h3, .guide-content h4 {
+  color: #fbbf24;
+  margin: 20px 0 12px;
+  line-height: 1.4;
+}
+.guide-content h1 { font-size: 22px; }
+.guide-content h2 { font-size: 20px; }
+.guide-content h3 { font-size: 18px; }
+.guide-content p { margin: 10px 0; }
+.guide-content ul, .guide-content ol { margin: 10px 0; padding-left: 24px; }
+.guide-content li { margin: 4px 0; }
+.guide-content strong { color: #f97316; font-weight: bold; }
+.guide-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.guide-content th, .guide-content td {
+  border: 1px solid #444;
+  padding: 8px 12px;
+  text-align: left;
+}
+.guide-content th { background: #2a2a2a; color: #fbbf24; }
+.guide-content tr:nth-child(even) { background: #1f1f1f; }
+.guide-content img { max-width: 100%; height: auto; border-radius: 4px; margin: 10px 0; }
+.guide-content a { color: #f97316; text-decoration: underline; }
+.guide-content blockquote {
+  border-left: 3px solid #f97316;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.empty-title {
+  font-size: 18px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+.empty-desc {
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+.empty-checklist {
+  text-align: left;
+  max-width: 360px;
+  margin: 0 auto 20px;
+  font-size: 13px;
+  background: #1f1f1f;
+  padding: 16px 20px;
+  border-radius: 6px;
+  border: 1px solid #333;
+}
+.empty-checklist p { margin: 6px 0; }
+.empty-checklist strong { color: #fbbf24; }
+.retry-btn {
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.retry-btn:hover { background: #ea580c; }
+
+/* 历史记录 */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.history-item {
+  padding: 10px 12px;
+  background: #222;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+.history-item:hover {
+  background: #2a2a2a;
+  border-color: #f97316;
+}
+.history-item.active {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: #f97316;
+  color: #fbbf24;
+}
+.history-item .h-title {
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+.history-item .h-date {
+  font-size: 11px;
+  color: #6b7280;
+}
+.history-item.active .h-date { color: #f97316; }
+
+.history-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* 底部 */
+.footer {
+  border-top: 1px solid #333;
+  margin-top: 40px;
+  padding: 24px 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+.footer .highlight { color: #f97316; }
+
+/* 加载动画 */
+.loading {
+  text-align: center;
+  padding: 40px 0;
+  color: #6b7280;
+}
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #333;
+  border-top-color: #f97316;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- 头部 -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">叶</div>
+      <div>
+        <div class="logo-text">火影战力周攻略</div>
+      </div>
+    </div>
+    <div class="header-tag">火之意志传承</div>
+  </div>
+</header>
+
+<!-- 主内容 -->
+<main class="main">
+  <div class="layout">
+    <!-- 左侧：攻略内容 -->
+    <div class="content-area">
+      <div class="card">
+        <div class="card-title">
+          <span id="contentTitle">攻略详情</span>
+          <span class="data-status">
+            <span id="statusDot" class="status-dot status-gray"></span>
+            <span id="statusText">加载中...</span>
+            <button class="refresh-btn" onclick="handleRefresh()" title="刷新">⟳</button>
+          </span>
+        </div>
+
+        <!-- 加载中 -->
+        <div id="loadingState" class="loading">
+          <div class="spinner"></div>
+          <div>加载中...</div>
+        </div>
+
+        <!-- 空状态 -->
+        <div id="emptyState" style="display:none;">
+          <div class="empty-state">
+            <div class="empty-icon">📜</div>
+            <div class="empty-title">暂无攻略内容</div>
+            <div class="empty-desc">
+              尝试加载路径：<code id="triedPath" style="background:#2a2a2a;padding:2px 6px;border-radius:4px;font-size:12px;">data.json</code>
+            </div>
+            <div class="empty-checklist">
+              <p><strong>排查步骤：</strong></p>
+              <p>1. 确认 <code>data.json</code> 已上传到网站根目录</p>
+              <p>2. 文件名是否为 <code>data.json</code>（区分大小写）</p>
+              <p>3. 点击下方刷新按钮重试</p>
+              <p>4. 管理员请在 <a href="admin.html">管理后台</a> 发布攻略</p>
+            </div>
+            <button class="retry-btn" onclick="handleRefresh()">刷新重试</button>
+          </div>
+        </div>
+
+        <!-- 攻略内容 -->
+        <div id="guideContent" class="guide-content" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 右侧：历史期数 -->
+    <div class="sidebar">
+      <div class="card">
+        <div class="card-title" style="font-size:14px;">历史期数</div>
+        <div id="historyList" class="history-list"></div>
+        <div id="historyEmpty" class="history-empty">暂无历史记录</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 底部 -->
+<footer class="footer">
+  <p>火影战力周攻略 · <span class="highlight">火之意志传承</span></p>
+  <p style="margin-top:4px;font-size:12px;">木叶村火影攻略组出品</p>
+</footer>
+
+<script>
+(function() {
+  const STORAGE_KEY = 'naruto_guides';
+  let guidesCache = null;
+  let currentGuideId = null;
+
+  // ========== 数据加载 ==========
+  async function tryFetchJson(path) {
+    try {
+      const res = await fetch(path + '?t=' + Date.now(), { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          return { success: true, data: data, path: path };
+        }
+      }
+    } catch (e) {}
+    return { success: false, path: path };
+  }
+
+  function loadFromLocal() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (e) { return []; }
+  }
+
+  async function loadGuides() {
+    if (guidesCache !== null) return guidesCache;
+
+    // 尝试 data.json
+    const paths = ['data.json', './data.json'];
+    for (const path of paths) {
+      const result = await tryFetchJson(path);
+      if (result.success) {
+        guidesCache = result.data;
+        updateStatus('online');
+        return guidesCache;
+      }
+    }
+
+    // 降级到 localStorage
+    guidesCache = loadFromLocal();
+    if (guidesCache.length > 0) {
+      updateStatus('local');
+    } else {
+      updateStatus('failed');
+    }
+    document.getElementById('triedPath').textContent = paths.join('、');
+    return guidesCache;
+  }
+
+  async function reloadGuides() {
+    guidesCache = null;
+    return loadGuides();
+  }
+
+  // ========== 状态显示 ==========
+  function updateStatus(status) {
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    dot.className = 'status-dot';
+    if (status === 'online') {
+      dot.classList.add('status-green');
+      text.textContent = '在线数据';
+    } else if (status === 'local') {
+      dot.classList.add('status-orange');
+      text.textContent = '本地数据';
+    } else if (status === 'failed') {
+      dot.classList.add('status-red');
+      text.textContent = '加载失败';
+    } else {
+      dot.classList.add('status-gray');
+      text.textContent = '加载中...';
+    }
+  }
+
+  function handleRefresh() {
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('guideContent').style.display = 'none';
+    updateStatus('loading');
+    reloadGuides().then(() => {
+      document.getElementById('loadingState').style.display = 'none';
+      renderAll();
+    });
+  }
+  window.handleRefresh = handleRefresh;
+
+  // ========== 渲染 ==========
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    const empty = document.getElementById('historyEmpty');
+    const guides = guidesCache || [];
+
+    if (guides.length === 0) {
+      list.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+
+    empty.style.display = 'none';
+    // 最新的在前面
+    const sorted = [...guides].reverse();
+    list.innerHTML = sorted.map(g => `
+      <div class="history-item ${g.id === currentGuideId ? 'active' : ''}" onclick="viewGuide('${g.id}')">
+        <div class="h-title">${escapeHtml(g.title)}</div>
+        <div class="h-date">${g.date || ''}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderContent() {
+    const guides = guidesCache || [];
+    const emptyState = document.getElementById('emptyState');
+    const guideContent = document.getElementById('guideContent');
+    const contentTitle = document.getElementById('contentTitle');
+
+    if (guides.length === 0) {
+      emptyState.style.display = 'block';
+      guideContent.style.display = 'none';
+      contentTitle.textContent = '攻略详情';
+      return;
+    }
+
+    // 默认显示最新一期
+    if (!currentGuideId) {
+      currentGuideId = guides[guides.length - 1].id;
+    }
+
+    const guide = guides.find(g => g.id === currentGuideId);
+    if (!guide) {
+      emptyState.style.display = 'block';
+      guideContent.style.display = 'none';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    guideContent.style.display = 'block';
+    contentTitle.textContent = guide.title;
+    guideContent.innerHTML = guide.content;
+  }
+
+  function renderAll() {
+    renderContent();
+    renderHistory();
+  }
+
+  function viewGuide(id) {
+    currentGuideId = id;
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  window.viewGuide = viewGuide;
+
+  // ========== 工具函数 ==========
+  function escapeHtml(s) {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  // ========== 初始化 ==========
+  updateStatus('loading');
+  loadGuides().then(() => {
+    document.getElementById('loadingState').style.display = 'none';
+    renderAll();
+  });
+})();
+</script>
+
+</body>
+</html>
